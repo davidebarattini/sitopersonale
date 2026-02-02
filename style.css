@@ -1,0 +1,155 @@
+/* Font: Bakemono Regular */
+@font-face {
+  font-family: "Bakemono";
+  src: url("Fonts/Bakemono-Mono-Regular.ttf") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root{
+  --bg: #252525;
+  --text: #f2f2f2;
+  --muted: rgba(242, 242, 242, 0.75);
+
+  --columns: 12;
+  --gutter: 20px;
+  --outer: 100px; /* margine */
+}
+
+*{ box-sizing: border-box; }
+html, body { height: 100%; }
+
+body{
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Bakemono", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+/* Griglia 12 colonne */
+.container{
+  width: 100%;
+  padding-inline: var(--outer);
+}
+
+.grid{
+  display: grid;
+  grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+  column-gap: var(--gutter);
+}
+
+/* Header */
+header{
+  padding-top: 48px;
+}
+
+.left{
+  grid-column: 1 / span 6;
+  align-self: start;
+}
+
+.right{
+  grid-column: 7 / span 6;
+  justify-self: end;
+  align-self: start;
+  text-align: right;
+}
+
+.name, .role{
+  font-size: 16px;
+  line-height: 1.1;
+  letter-spacing: 0.2px;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Icone sotto al nome, allineate a sinistra */
+.icons{
+  margin-top: 14px;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+/* Bottone icona */
+.icon-btn{
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+  border: 1px solid rgba(242,242,242,0.20);
+  background: rgba(0,0,0,0.15);
+
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease;
+}
+
+.icon-btn:hover{
+  transform: translateY(-1px);
+  border-color: rgba(242,242,242,0.45);
+}
+
+.icon-btn img{
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  display: block;
+}
+
+.slot{
+  display: inline-block;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  will-change: contents;
+}
+
+/* opzionale: durante lo shuffle */
+.slot.is-shuffling{
+  text-shadow: 0 0 10px rgba(242,242,242,0.15);
+  opacity: 0.95;
+}
+
+/* Rispetta chi preferisce meno animazioni */
+@media (prefers-reduced-motion: reduce){
+  .slot{ text-shadow: none; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Responsive */
+@media (max-width: 1024px){
+  :root{ --outer: 48px; }
+  header{ padding-top: 32px; }
+}
+
+@media (max-width: 720px){
+  :root{ --outer: 20px; }
+  header{ padding-top: 24px; }
+
+  .left{ grid-column: 1 / -1; }
+
+  .right{
+    grid-column: 1 / -1;
+    justify-self: start;
+    text-align: left;
+    margin-top: 18px;
+    color: var(--muted);
+  }
+}
