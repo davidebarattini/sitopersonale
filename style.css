@@ -167,7 +167,7 @@ header{
   top: 50%;
   transform: translateY(-50%) scale(0.92);
   transform-origin: left center;
-  opacity: 0;
+  opacity: 1;
   pointer-events: none;
   transition: opacity 160ms ease, transform 160ms ease;
 }
@@ -181,6 +181,7 @@ header{
 
 /* Immagine preview circolare */
 .preview img{
+  opacity: 0;
   width: 92px;
   height: 92px;
   border-radius: 999px;

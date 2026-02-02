@@ -109,11 +109,10 @@
   /* -------------------- HOTSPOTS -------------------- */
   // Cambia qui nomi, immagini e link ai progetti
   const projects = [
-    { label: "Project 01", img: "Immagini/rosso.png", url: "./project-01.html", theta: 0.20 },
-    { label: "Project 02", img: "Immagini/verde.jpg", url: "./project-02.html", theta: 1.35 },
-    { label: "Project 03", img: "Immagini/giallo.jpg", url: "./project-03.html", theta: 2.55 },
-    { label: "Project 04", img: "Immagini/blu.jpeg", url: "./project-04.html", theta: 3.75 },
-    { label: "Project 05", img: "Immagini/viola.webp", url: "./project-05.html", theta: 4.95 },
+    { label: "Project 01", img: "Immagini/rosso.png", url: "./project-01.html", theta: 0 },
+    { label: "Project 02", img: "Immagini/verde.jpg", url: "./project-02.html", theta: Math.PI / 2 },
+    { label: "Project 03", img: "Immagini/giallo.jpg", url: "./project-03.html", theta: Math.PI },
+    { label: "Project 04", img: "Immagini/blu.jpeg", url: "./project-04.html", theta: Math.PI * 1.5 },
   ];
 
   const hotspotLayer = document.getElementById("hotspots");
