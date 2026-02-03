@@ -109,7 +109,7 @@
   /* -------------------- HOTSPOTS -------------------- */
   // Cambia qui nomi, immagini e link ai progetti
   const projects = [
-    { label: "Project 01", img: "Immagini/rosso.png", url: "./project-01.html", theta: 0 },
+    { label: "Project 01", img: "Immagini/project01.png", url: "Es.7/index.html", theta: 0 },
     { label: "Project 02", img: "Immagini/verde.jpg", url: "./project-02.html", theta: Math.PI / 2 },
     { label: "Project 03", img: "Immagini/giallo.jpg", url: "./project-03.html", theta: Math.PI },
     { label: "Project 04", img: "Immagini/blu.jpeg", url: "./project-04.html", theta: Math.PI * 1.5 },
@@ -284,6 +284,27 @@
       window.location.href = link.href;
     }, 650);
   });
+})();
+
+(() => {
+  const overlay = document.getElementById("circle-transition");
+  if (!overlay) return;
+
+  function resetOverlay() {
+    overlay.style.opacity = "0";
+    overlay.style.transform = "translate(-50%, -50%) scale(0)";
+    // posizione offscreen per sicurezza
+    overlay.style.left = "-9999px";
+    overlay.style.top = "-9999px";
+  }
+
+  // Quando la pagina torna da "indietro" (bfcache), resetta
+  window.addEventListener("pageshow", (e) => {
+    resetOverlay();
+  });
+
+  // Extra sicurezza: reset anche al load normale
+  window.addEventListener("load", resetOverlay);
 })();
 
 
