@@ -226,6 +226,19 @@ header{ position: relative; z-index: 10; }
     opacity 200ms ease;
 }
 
+/* contenitore fisso in basso a destra */
+#portrait-p5{
+  position: fixed;
+  right: -200px;
+  bottom: -200px;
+  width: 800px;
+  height: 800px;
+  border-radius: 999px;
+  overflow: hidden;
+  z-index: 6;           /* sopra ring/hotspots */
+  pointer-events: none; /* non blocca click sul sito */
+
+}
 
 
 

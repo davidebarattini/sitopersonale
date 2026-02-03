@@ -287,3 +287,100 @@
 })();
 
 
+
+
+const DOT_SCALE = 0.015;
+
+/* p5 in instance mode: non confligge con il tuo JS principale */
+new p5((p) => {
+  let faccione;
+  let small;
+  const size = 800; // deve combaciare col CSS (width/height)
+
+  p.preload = () => {
+    faccione = p.loadImage("Immagini/ritratto.png"); // immagine
+  };
+
+  p.setup = () => {
+    const cnv = p.createCanvas(size, size);
+    cnv.parent("portrait-p5");
+
+    p.pixelDensity(1);
+    p.noStroke();
+
+    // riduco immagine per farla “a puntini”
+    // (più piccolo => più grosso l’effetto puntinato)
+    small = faccione.get();
+    small.resize(Math.floor(faccione.width / 6), Math.floor(faccione.height / 6));
+  };
+
+  p.draw = () => {
+    // bg trasparente così si fonde con sito; se vuoi nero: p.background(0)
+    p.clear();
+
+    const numH = small.width;
+    const numV = small.height;
+
+    const d = 4; // distanza fra puntini (puoi cambiare)
+    const ox = (p.width - (numH - 1) * d) / 2;
+    const oy = (p.height - (numV - 1) * d) / 2;
+
+    // usa il mouse globale (window) per reagire anche fuori dal cerchio
+const mx = (window.__mouseX ?? p.mouseX);
+const ANCHOR_X = window.innerWidth / 2;  // punto neutro
+const strength = 0.20;
+
+const amount = (mx - ANCHOR_X) * strength;
+
+
+    // noise che “scorre” (animazione)
+    const ny = p.frameCount * 0.011;
+    const nx = p.frameCount * 0.031;
+    const nz = p.frameCount * 0.014;
+
+    // clip circolare (così resta perfetto nel cerchio)
+    p.push();
+    p.drawingContext.save();
+    p.drawingContext.beginPath();
+    p.drawingContext.arc(p.width / 2, p.height / 2, p.width / 2, 0, Math.PI * 2);
+    p.drawingContext.clip();
+
+    // disegna puntini
+    for (let j = 0; j < numV; j++) {
+      for (let i = 0; i < numH; i++) {
+        const col = small.get(i, j);
+        const al = p.alpha(col);
+        if (al < 250) continue;
+
+        const br = p.brightness(col);
+
+        p.fill(200); // puntini chiari neutri
+
+        const px =
+          ox + i * d +
+          p.map(p.noise(i * 0.02 + nx, j * 0.02 + ny, nz), 0, 1, -amount, amount);
+
+        const py =
+          oy + j * d +
+          p.map(p.noise(i * 0.08 + nx, j * 0.02 + ny, nz + 5), 0, 1, -amount, amount);
+
+        p.circle(px, py, br * DOT_SCALE);
+      }
+    }
+
+    // restore clip
+    p.drawingContext.restore();
+    p.pop();
+  };
+});
+
+/* mouse globale per avere controllo anche quando pointer-events è none */
+(() => {
+  window.__mouseX = 0;
+  window.addEventListener("mousemove", (e) => {
+    window.__mouseX = e.clientX;
+  }, { passive: true });
+})();
+
+
+
