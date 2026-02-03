@@ -97,7 +97,7 @@
     alpha: 0.45,
     glow: 4,
 
-    speed: 0.010,
+    speed: 0.020,
     wobble: 0.55,
     twist: 1.25,
 
