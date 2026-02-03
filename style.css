@@ -167,7 +167,7 @@ header{
   top: 50%;
   transform: translateY(-50%) scale(0.92);
   transform-origin: left center;
-  opacity: 1;
+  /*opacity: 1;*/
   pointer-events: none;
   transition: opacity 160ms ease, transform 160ms ease;
 }
@@ -177,6 +177,13 @@ header{
 .hotspot:focus-within .preview{
   opacity: 1;
   transform: translateY(-50%) scale(1);
+}
+
+/* Mostra preview su hover */
+.hotspot:hover .preview img,
+.hotspot:focus-within .preview img{
+  opacity: 1;
+  transform: scale(1);
 }
 
 /* Immagine preview circolare */
@@ -200,7 +207,7 @@ header{
 }
 
 /* Se vuoi che gli hotspot stiano sotto all'header, alza lo z-index dell'header */
-header{ position: relative; z-index: 2; }
+header{ position: relative; z-index: 10; }
 
 #circle-transition{
   position: fixed;
