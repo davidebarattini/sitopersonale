@@ -91,7 +91,7 @@
     thickness: () => Math.min(w, h) * 0.045,
 
     ribbons: 5,
-    steps: 900,
+    steps: 520,
 
     lineWidth: 1,
     alpha: 0.45,
