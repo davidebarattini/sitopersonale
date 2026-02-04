@@ -333,6 +333,7 @@ new p5((p) => {
     // (più piccolo => più grosso l’effetto puntinato)
     small = faccione.get();
     small.resize(Math.floor(faccione.width / 6), Math.floor(faccione.height / 6));
+    small.loadPixels();
   };
 
   p.draw = () => {
@@ -366,16 +367,21 @@ const amount = (mx - ANCHOR_X) * strength;
     p.drawingContext.arc(p.width / 2, p.height / 2, p.width / 2, 0, Math.PI * 2);
     p.drawingContext.clip();
 
+    p.fill(200); // puntini chiari neutri
+    const pixels = small.pixels;
+
     // disegna puntini
     for (let j = 0; j < numV; j++) {
       for (let i = 0; i < numH; i++) {
-        const col = small.get(i, j);
-        const al = p.alpha(col);
-        if (al < 250) continue;
+        const idx = 4 * (j * numH + i);
+        const r = pixels[idx];
+        const g = pixels[idx + 1];
+        const b = pixels[idx + 2];
+        const a = pixels[idx + 3];
 
-        const br = p.brightness(col);
+        if (a < 250) continue;
 
-        p.fill(200); // puntini chiari neutri
+        const br = (Math.max(r, g, b) / 255) * 100;
 
         const px =
           ox + i * d +
@@ -402,6 +408,3 @@ const amount = (mx - ANCHOR_X) * strength;
     window.__mouseX = e.clientX;
   }, { passive: true });
 })();
-
-
-
