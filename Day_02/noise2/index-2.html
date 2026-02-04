@@ -24,8 +24,8 @@
 			noFill()
 			stroke(255)
 
-			let sn = mouseX * 0.01
-			let depth = mouseY
+			let sn = frameCount * 0.05
+			let depth = 200 + mouseY * 0.5
 
 			for (let j=50; j<height-50; j+=6) {
 				beginShape()

@@ -6,11 +6,23 @@
 	<title>Document</title>
 	<style>
 		body {
-			background-color: gray;
+			background-color: black;
+			margin: 0;
+			overflow: hidden;
+		}
+		.back-btn {
+			position: fixed;
+			top: 48px;
+			left: 100px;
+			color: white;
+			font-size: 30px;
+			text-decoration: none;
+			z-index: 999;
 		}
 	</style>
 </head>
 <body>
+	<a href="../index.html" class="back-btn">&larr;</a>
 	<script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"></script>
 	<script>
 
@@ -22,8 +34,12 @@
 
 		function setup() {
 			// creiamo un elemento canvas
-			createCanvas(800, 600)
+			createCanvas(windowWidth, windowHeight)
 			faccione.resize(faccione.width / 5, faccione.height / 5)
+		}
+
+		function windowResized() {
+			resizeCanvas(windowWidth, windowHeight)
 		}
 
 		function draw(){
@@ -37,7 +53,8 @@
 			let ox = (width - (numH - 1) * d) / 2
 			let oy = (height - (numV - 1) * d) / 2
 
-			let amount = mouseX * 0.3
+			let dMouse = dist(mouseX, mouseY, width / 2, height / 2)
+			let amount = dMouse * 0.3
 
 			let ny = frameCount * 0.011
 			let nx = frameCount * 0.031
@@ -55,8 +72,6 @@
 					circle(px, py, br * 0.015)
 				}
 			}
-
-			image(faccione, 0, 0)
 
 		}
 	</script>

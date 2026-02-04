@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+		body {
+			background-color: black;
+			margin: 0;
+			height: 100vh;
+			overflow: hidden;
+		}
+		.back-btn {
+			position: fixed;
+			top: 48px;
+			left: 100px;
+			color: white;
+			font-size: 30px;
+			text-decoration: none;
+			z-index: 999;
+		}
+	</style>
+</head>
+<body>
+	<a href="../index.html" class="back-btn">&larr;</a>
+	<script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"></script>
+	<script>
+
+		function setup() {
+			createCanvas(windowWidth, windowHeight)
+		}
+
+		function windowResized() {
+			resizeCanvas(windowWidth, windowHeight)
+		}
+
+		function draw(){
+			background(0)
+
+			noFill()
+			stroke(255)
+
+			let sn = frameCount * 0.01 + mouseX * 0.005
+			let depth = map(mouseY, 0, height, 100, 300)
+
+			for (let j = height / 2 - 150; j < height / 2 + 150; j += 10) {
+				beginShape()
+				for (let i = 0; i < width; i+=10) {
+					let n = noise(i * 0.003 + sn, j * 0.007 + frameCount * 0.01) * 300 - depth
+					n = min(0, n)
+					vertex(i, n + j)
+				}
+				endShape()
+			}
+		}
+	</script>
+</body>
+</html>

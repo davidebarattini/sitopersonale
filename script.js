@@ -110,13 +110,17 @@
   // Cambia qui nomi, immagini e link ai progetti
   const projects = [
     { label: "Project 01", img: "Immagini/project01.png", url: "Es.7/index.html", theta: 0 },
-    { label: "Project 02", img: "Immagini/verde.jpg", url: "./project-02.html", theta: Math.PI / 2 },
-    { label: "Project 03", img: "Immagini/giallo.jpg", url: "./project-03.html", theta: Math.PI },
+    { label: "Project 02", img: "Immagini/onda.png", url: "noise2/index-2.html", theta: Math.PI / 2 },
+    { label: "Project 03", img: "Immagini/project03.png", url: "estext/index-2.html", theta: Math.PI },
     { label: "Project 04", img: "Immagini/blu.jpeg", url: "./project-04.html", theta: Math.PI * 1.5 },
   ];
 
   const hotspotLayer = document.getElementById("hotspots");
   const hotspotEls = [];
+
+  // Variabili per gestire la velocità dinamica (rallentamento su hover)
+  let targetSpeed = cfg.speed;
+  let currentSpeed = cfg.speed;
 
   if (hotspotLayer) {
     hotspotLayer.innerHTML = "";
@@ -132,6 +136,10 @@
       `;
       hotspotLayer.appendChild(wrap);
       hotspotEls.push(wrap);
+
+      // Eventi: rallenta quando il mouse è sopra (es. 0.003), ripristina quando esce
+      wrap.addEventListener("mouseenter", () => targetSpeed = 0.003);
+      wrap.addEventListener("mouseleave", () => targetSpeed = cfg.speed);
     });
   }
 
@@ -243,7 +251,11 @@
     ctx.globalCompositeOperation = "source-over";
     ctx.shadowBlur = 0;
 
-    if (!reduceMotion) t += cfg.speed;
+    if (!reduceMotion) {
+      // Interpolazione per rendere fluido il cambio di velocità
+      currentSpeed += (targetSpeed - currentSpeed) * 0.05;
+      t += currentSpeed;
+    }
 
     requestAnimationFrame(draw);
   }
@@ -358,7 +370,7 @@ new p5((p) => {
     }
 
     // Mouse tracking integrato
-    window.__mouseX = 0;
+    window.__mouseX = window.innerWidth / 2;
     window.addEventListener("mousemove", (e) => {
       window.__mouseX = e.clientX;
     }, { passive: true });

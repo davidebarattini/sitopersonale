@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<style>
+		body {
+			background-color: black;
+			margin: 0;
+			height: 100vh;
+			overflow: hidden;
+		}
+		.back-btn {
+			position: fixed;
+			top: 48px;
+			left: 100px;
+			color: white;
+			font-size: 30px;
+			text-decoration: none;
+			z-index: 999;
+		}
+	</style>
+</head>
+<body>
+	<a href="../index.html" class="back-btn">&larr;</a>
+	<script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"></script>
+	<script>
+
+		let font
+		let pts = []
+		let bounds
+		let jX, jY
+
+		function preload() {
+			font = loadFont('../Fonts/Bakemono-Mono-Regular.ttf')
+		}
+
+		function setup() {
+			createCanvas(windowWidth, windowHeight)
+			jX = width / 2
+			jY = height / 2 - 150
+			
+			let txt = 'ZTL'
+			let fontSize = 150
+			
+			bounds = font.textBounds(txt, 0, 0, fontSize)
+			pts = font.textToPoints(txt, -bounds.w / 2, bounds.h / 2, fontSize, {
+				sampleFactor: 0.25,
+				simplifyThreshold: 0
+			})
+		}
+
+		function windowResized() {
+			resizeCanvas(windowWidth, windowHeight)
+		}
+
+		function draw() {
+			background(0)
+			
+			let targetX = mouseX
+			let targetY = mouseY
+			if (mouseX === 0 && mouseY === 0) {
+				targetX = width / 2
+				targetY = height / 2 - 150
+			}
+			jX = lerp(jX, targetX, 0.05)
+			jY = lerp(jY, targetY, 0.05)
+			translate(jX, jY)
+
+			let layers = 40
+			for (let i = 0; i < layers; i++) {
+				let t = frameCount * 0.02
+				let progress = i / layers
+				let alpha = map(progress, 0, 1, 255, 0)
+				stroke(255, alpha)
+				strokeWeight(2)
+				
+				let wave = sin(t * 3 + progress * 4) * map(progress, 0, 1, 0, 100)
+				let expansion = map(sin(t * 2 - progress * PI), -1, 1, 0.9, 1.1)
+				let yOff = i * 8
+				
+				beginShape(POINTS)
+				for (let p of pts) {
+					let px = p.x * expansion + wave
+					let py = p.y + yOff
+					let nX = map(noise(p.x * 0.01, p.y * 0.01, t), 0, 1, -10, 10)
+					let nY = map(noise(p.x * 0.01 + 100, p.y * 0.01, t), 0, 1, -10, 10)
+					vertex(px + nX, py + nY)
+				}
+				endShape()
+			}
+		}
+	</script>
+</body>
+</html>
