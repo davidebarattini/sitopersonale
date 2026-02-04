@@ -97,7 +97,7 @@
     alpha: 0.45,
     glow: 4,
 
-    speed: 0.020,
+    speed: 0.015,
     wobble: 0.55,
     twist: 1.25,
 
@@ -191,6 +191,9 @@
     ctx.shadowBlur = cfg.glow;
     ctx.globalCompositeOperation = "lighter";
 
+    const cx = w * 0.5;
+    const cy = h * 0.5;
+
     for (let k = 0; k < cfg.ribbons; k++) {
       const phase = (k / cfg.ribbons) * Math.PI * 2;
       const localT = t + phase * 0.25;
@@ -209,9 +212,6 @@
         const tw = Math.sin(theta * 8 + localT * 2.6) * cfg.twist;
 
         const r = R + wob * thick * cfg.wobble + tw * (thick * 0.10) * Math.sin(phase);
-
-        const cx = w * 0.5;
-        const cy = h * 0.5;
 
         const x = cx + Math.cos(theta + localT * 0.25) * r;
         const y = cy + Math.sin(theta + localT * 0.25) * r;
@@ -258,6 +258,13 @@
   const overlay = document.getElementById("circle-transition");
   if (!overlay) return;
 
+  function resetOverlay() {
+    overlay.style.opacity = "0";
+    overlay.style.transform = "translate(-50%, -50%) scale(0)";
+    overlay.style.left = "-9999px";
+    overlay.style.top = "-9999px";
+  }
+
   document.addEventListener("click", (e) => {
     const link = e.target.closest(".hotspot a");
     if (!link) return;
@@ -284,26 +291,9 @@
       window.location.href = link.href;
     }, 650);
   });
-})();
 
-(() => {
-  const overlay = document.getElementById("circle-transition");
-  if (!overlay) return;
-
-  function resetOverlay() {
-    overlay.style.opacity = "0";
-    overlay.style.transform = "translate(-50%, -50%) scale(0)";
-    // posizione offscreen per sicurezza
-    overlay.style.left = "-9999px";
-    overlay.style.top = "-9999px";
-  }
-
-  // Quando la pagina torna da "indietro" (bfcache), resetta
-  window.addEventListener("pageshow", (e) => {
-    resetOverlay();
-  });
-
-  // Extra sicurezza: reset anche al load normale
+  // Reset al load e quando si torna indietro (bfcache)
+  window.addEventListener("pageshow", resetOverlay);
   window.addEventListener("load", resetOverlay);
 })();
 
@@ -316,6 +306,7 @@ const DOT_SCALE = 0.015;
 new p5((p) => {
   let faccione;
   let small;
+  let dots = []; // Array per memorizzare i punti pre-calcolati
   const size = 800; // deve combaciare col CSS (width/height)
 
   p.preload = () => {
@@ -334,26 +325,54 @@ new p5((p) => {
     small = faccione.get();
     small.resize(Math.floor(faccione.width / 6), Math.floor(faccione.height / 6));
     small.loadPixels();
+
+    // --- PRE-CALCOLO DEI PUNTI ---
+    // Ottimizzazione: calcoliamo posizioni e colori una volta sola qui,
+    // invece di farlo 60 volte al secondo nel draw().
+    const numH = small.width;
+    const numV = small.height;
+    const d = 4;
+    const ox = (p.width - (numH - 1) * d) / 2;
+    const oy = (p.height - (numV - 1) * d) / 2;
+    const pixels = small.pixels;
+
+    for (let j = 0; j < numV; j++) {
+      for (let i = 0; i < numH; i++) {
+        const idx = 4 * (j * numH + i);
+        const a = pixels[idx + 3];
+
+        if (a < 250) continue; // Salta pixel trasparenti
+
+        const r = pixels[idx];
+        const g = pixels[idx + 1];
+        const b = pixels[idx + 2];
+        const br = (Math.max(r, g, b) / 255) * 100;
+
+        dots.push({
+          baseX: ox + i * d,
+          baseY: oy + j * d,
+          i, j, // indici per il noise
+          size: br * DOT_SCALE
+        });
+      }
+    }
+
+    // Mouse tracking integrato
+    window.__mouseX = 0;
+    window.addEventListener("mousemove", (e) => {
+      window.__mouseX = e.clientX;
+    }, { passive: true });
   };
 
   p.draw = () => {
     // bg trasparente così si fonde con sito; se vuoi nero: p.background(0)
     p.clear();
 
-    const numH = small.width;
-    const numV = small.height;
-
-    const d = 4; // distanza fra puntini (puoi cambiare)
-    const ox = (p.width - (numH - 1) * d) / 2;
-    const oy = (p.height - (numV - 1) * d) / 2;
-
     // usa il mouse globale (window) per reagire anche fuori dal cerchio
-const mx = (window.__mouseX ?? p.mouseX);
-const ANCHOR_X = window.innerWidth / 2;  // punto neutro
-const strength = 0.20;
-
-const amount = (mx - ANCHOR_X) * strength;
-
+    const mx = (window.__mouseX ?? p.mouseX);
+    const ANCHOR_X = window.innerWidth / 2;
+    const strength = 0.20;
+    const amount = (mx - ANCHOR_X) * strength;
 
     // noise che “scorre” (animazione)
     const ny = p.frameCount * 0.011;
@@ -368,31 +387,13 @@ const amount = (mx - ANCHOR_X) * strength;
     p.drawingContext.clip();
 
     p.fill(200); // puntini chiari neutri
-    const pixels = small.pixels;
 
-    // disegna puntini
-    for (let j = 0; j < numV; j++) {
-      for (let i = 0; i < numH; i++) {
-        const idx = 4 * (j * numH + i);
-        const r = pixels[idx];
-        const g = pixels[idx + 1];
-        const b = pixels[idx + 2];
-        const a = pixels[idx + 3];
-
-        if (a < 250) continue;
-
-        const br = (Math.max(r, g, b) / 255) * 100;
-
-        const px =
-          ox + i * d +
-          p.map(p.noise(i * 0.02 + nx, j * 0.02 + ny, nz), 0, 1, -amount, amount);
-
-        const py =
-          oy + j * d +
-          p.map(p.noise(i * 0.08 + nx, j * 0.02 + ny, nz + 5), 0, 1, -amount, amount);
-
-        p.circle(px, py, br * DOT_SCALE);
-      }
+    // Loop ottimizzato sull'array pre-calcolato
+    for (let k = 0; k < dots.length; k++) {
+      const d = dots[k];
+      const px = d.baseX + p.map(p.noise(d.i * 0.02 + nx, d.j * 0.02 + ny, nz), 0, 1, -amount, amount);
+      const py = d.baseY + p.map(p.noise(d.i * 0.08 + nx, d.j * 0.02 + ny, nz + 5), 0, 1, -amount, amount);
+      p.circle(px, py, d.size);
     }
 
     // restore clip
@@ -400,11 +401,3 @@ const amount = (mx - ANCHOR_X) * strength;
     p.pop();
   };
 });
-
-/* mouse globale per avere controllo anche quando pointer-events è none */
-(() => {
-  window.__mouseX = 0;
-  window.addEventListener("mousemove", (e) => {
-    window.__mouseX = e.clientX;
-  }, { passive: true });
-})();
