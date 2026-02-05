@@ -41,7 +41,7 @@
 			jX = width / 2
 			jY = height / 2 - 150
 			
-			let txt = 'ZTL'
+			let txt = 'BRTN'
 			let fontSize = 150
 			
 			bounds = font.textBounds(txt, 0, 0, fontSize)
@@ -74,9 +74,9 @@
 				let progress = i / layers
 				let alpha = map(progress, 0, 1, 255, 0)
 				stroke(255, alpha)
-				strokeWeight(2)
+				strokeWeight(1.5)
 				
-				let wave = sin(t * 3 + progress * 4) * map(progress, 0, 1, 0, 100)
+				let wave = sin(t * 3 + progress * 8) * map(progress, 0, 1, 30, 100)
 				let expansion = map(sin(t * 2 - progress * PI), -1, 1, 0.9, 1.1)
 				let yOff = i * 8
 				
