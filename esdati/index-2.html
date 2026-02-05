@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Davide Barattini - Dati Chat</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+		body {
+			background-color: black;
+			margin: 0;
+			height: 100vh;
+			overflow: hidden;
+		}
+		.back-btn {
+			position: fixed;
+			top: 48px;
+			left: 100px;
+			color: white;
+			font-size: 30px;
+			text-decoration: none;
+			z-index: 999;
+		}
+		.profile-container {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			gap: 20px;
+			align-items: center;
+			pointer-events: none;
+			z-index: 10;
+			padding-top: 60px;
+		}
+		.profile {
+			width: 300px;
+			color: white;
+			font-family: 'Courier New', Courier, monospace;
+			pointer-events: auto;
+			background: rgba(0, 0, 0, 0.4);
+			padding: 20px;
+			border: 1px solid rgba(255, 255, 255, 0.2);
+		}
+		.face-placeholder {
+			width: 100px;
+			height: 100px;
+			border-radius: 50%;
+			background-color: #222;
+			border: 2px solid #0ff;
+			box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+			margin: 0 auto 20px;
+			display: block;
+			object-fit: cover;
+			filter: sepia(1) hue-rotate(150deg) saturate(2) opacity(0.9);
+		}
+		.data-group {
+			margin-bottom: 20px;
+		}
+		.label {
+			font-size: 12px;
+			text-transform: uppercase;
+			margin-bottom: 8px;
+			opacity: 0.8;
+		}
+		.bar-container {
+			display: flex;
+			height: 8px;
+			background: #333;
+			width: 100%;
+		}
+		.bar {
+			height: 100%;
+		}
+		.list-item {
+			display: flex;
+			justify-content: space-between;
+			border-bottom: 1px solid rgba(255,255,255,0.1);
+			padding: 4px 0;
+			font-size: 14px;
+		}
+		.meta {
+			font-size: 10px;
+			display: flex;
+			justify-content: space-between;
+			margin-top: 4px;
+			opacity: 0.6;
+		}
+	</style>
+</head>
+<body>
+	<a href="../index.html" class="back-btn">&larr;</a>
+	
+	<div class="profile-container">
+		<!-- Profilo Sinistra -->
+		<div class="profile">
+			<img src="foto_profilo.png" class="face-placeholder" alt="Utente 1">
+			
+			<div class="data-group">
+				<div class="label">Messaggi (Inviati vs Ricevuti)</div>
+				<div class="bar-container">
+					<div class="bar" style="width: 40%; background: white;"></div>
+					<div class="bar" style="width: 60%; background: #666;"></div>
+				</div>
+				<div class="meta"><span>Io: 40%</span><span>Loro: 60%</span></div>
+			</div>
+
+			<div class="data-group">
+				<div class="label">Parole più usate</div>
+				<div class="list-item"><span>ma</span><span>10.505</span></div>
+				<div class="list-item"><span>che</span><span>8.968</span></div>
+				<div class="list-item"><span>non</span><span>8.769</span></div>
+			</div>
+
+			<div class="data-group">
+				<div class="label">Tempo medio risposta</div>
+				<div class="bar-container">
+					<div class="bar" style="width: 25%; background: white;"></div>
+				</div>
+				<div class="meta"><span>12 minuti</span></div>
+			</div>
+		</div>
+
+		<!-- Profilo Destra -->
+		<div class="profile">
+			<img src="foto_profilo02.png" class="face-placeholder" alt="Utente 2">
+			
+			<div class="data-group">
+				<div class="label">Messaggi (Inviati vs Ricevuti)</div>
+				<div class="bar-container">
+					<div class="bar" style="width: 70%; background: white;"></div>
+					<div class="bar" style="width: 30%; background: #666;"></div>
+				</div>
+				<div class="meta"><span>Io: 70%</span><span>Loro: 30%</span></div>
+			</div>
+
+			<div class="data-group">
+				<div class="label">Parole più usate</div>
+				<div class="list-item"><span>e</span><span>7.957</span></div>
+				<div class="list-item"><span>a</span><span>7.720</span></div>
+				<div class="list-item"><span>la</span><span>5.814</span></div>
+			</div>
+
+			<div class="data-group">
+				<div class="label">Tempo medio risposta</div>
+				<div class="bar-container">
+					<div class="bar" style="width: 60%; background: white;"></div>
+				</div>
+				<div class="meta"><span>45 minuti</span></div>
+			</div>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/p5@1.11.11/lib/p5.min.js"></script>
+	<script>
+let t = 0;
+
+function setup() {
+  const c = createCanvas(windowWidth, windowHeight);
+  c.id('bg-canvas');
+  pixelDensity(1);
+  noFill();
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
+function draw() {
+  // fondo
+  background(0);
+
+  // “glow” semplice: disegna due passate (una più larga e trasparente)
+  drawField(2.2, 10, 0.055);  // glow layer
+  drawField(1.0, 22, 0.085);  // main layer
+
+  t += 0.008;
+}
+
+function drawField(alphaMul, step, scale) {
+  // colore principale (bianco/ciano molto tenue)
+  // niente fill, solo stroke
+  const baseA = 18 * alphaMul;
+
+  // linee tipo “contour” oravoid
+  const cx = width * 0.5;
+  const cy = height * 0.48;
+
+  // parametri look
+  const layers = 34;        // quante “fasce”
+  const span = min(width, height) * 0.015;
+  const maxR = min(width, height) * 0.48;
+
+  // glow: strokeWeight più alto e blur simulato
+  strokeWeight(alphaMul > 1.5 ? 2.2 : 1.1);
+
+  // blending leggero
+  blendMode(ADD);
+
+  for (let i = 0; i < layers; i++) {
+    const r = (i / (layers - 1)) * maxR + 40;
+    const a = baseA * (1 - i / layers);
+
+    // alterna bianco/ciano sporco
+    const isCyan = (i % 3 === 0);
+    stroke(isCyan ? color(0, 255, 255, a) : color(255, 255, 255, a));
+
+    beginShape();
+    for (let ang = 0; ang <= TWO_PI + 0.01; ang += 0.06) {
+      // rumore per “incisione” vettoriale
+      const nx = cos(ang) * 0.9 + 1.7;
+      const ny = sin(ang) * 0.9 + 2.3;
+
+      // flow noise animato
+      const n = noise(
+        nx + r * 0.006,
+        ny + r * 0.006,
+        t
+      );
+
+      // increspatura: mix di noise + sinusoide
+      const wobble =
+        (n - 0.5) * (span * 2.2) +
+        sin(ang * 3 + t * 3.2 + i * 0.12) * (span * 0.8);
+
+      // piccolo “drift” globale
+      const drift =
+        noise(ang * 0.7, i * 0.09, t) * 22 - 11;
+
+      const rr = r + wobble + drift;
+
+      // schiaccia un filo in verticale (effetto testa/maschera)
+      const squash = 0.92 + noise(i * 0.08, t) * 0.08;
+
+      const x = cx + cos(ang) * rr;
+      const y = cy + sin(ang) * rr * squash;
+
+      vertex(x, y);
+    }
+    endShape();
+  }
+
+  // griglia vettoriale sottile (tipo HUD)
+  strokeWeight(alphaMul > 1.5 ? 1.6 : 0.8);
+  stroke(0, 255, 255, 10 * alphaMul);
+
+  const gridStep = step;
+  for (let y = 0; y <= height; y += gridStep) {
+    beginShape();
+    for (let x = 0; x <= width; x += gridStep) {
+      const n = noise(x * scale, y * scale, t);
+      const yy = y + (n - 0.5) * 10;
+      vertex(x, yy);
+    }
+    endShape();
+  }
+
+  blendMode(BLEND);
+}
+</script>
+
+	
+</body>
+</html>

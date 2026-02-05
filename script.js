@@ -112,7 +112,7 @@
     { label: "Project 01", img: "Immagini/project01.png", url: "Es.7/index.html", theta: 0 },
     { label: "Project 02", img: "Immagini/onda.png", url: "noise2/index-2.html", theta: Math.PI / 2 },
     { label: "Project 03", img: "Immagini/project03.png", url: "estext/index-2.html", theta: Math.PI },
-    { label: "Project 04", img: "Immagini/blu.jpeg", url: "./project-04.html", theta: Math.PI * 1.5 },
+    { label: "Project 04", img: "Immagini/project04.png", url: "esdati/index-2.html", theta: Math.PI * 1.5 },
   ];
 
   const hotspotLayer = document.getElementById("hotspots");
